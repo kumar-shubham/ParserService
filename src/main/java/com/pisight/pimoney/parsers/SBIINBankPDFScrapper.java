@@ -1,29 +1,29 @@
 package com.pisight.pimoney.parsers;
 
-import java.io.File;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.pisight.pimoney.beans.Response;
 import com.pisight.pimoney.beans.BankAccount;
 import com.pisight.pimoney.beans.BankTransaction;
+import com.pisight.pimoney.beans.Response;
 
 public class SBIINBankPDFScrapper extends PDFParser {
 
 	@Override
-	public Response parse(WebDriver driver, File file) throws Exception {
+	public Response parse(WebDriver driver, PDDocument pdDocument) throws Exception {
 		// TODO Auto-generated method stub
-		String page = parsePDFToHTML(file);
+		String page = parsePDFToHTML(pdDocument);
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
-		System.out.println(page);
+		//System.out.println(page);
 
 		js.executeScript(page);
 
@@ -34,8 +34,8 @@ public class SBIINBankPDFScrapper extends PDFParser {
 		// TODO Auto-generated method stub
 		Response response = new Response();
 		
-		System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
-		System.out.println();
+		//System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
+		//System.out.println();
 		WebElement page = driver.findElement(By.id("PDF_TO_HTML"));
 		//setting default value as INR because of India locale. 
 		String currency = "INR";
@@ -63,7 +63,7 @@ public class SBIINBankPDFScrapper extends PDFParser {
 		String transHeader = "Txn Date Value Description";
 		String xpath = "//td[contains(text(), 'Txn Date Value Description')]/../following-sibling::tr";
 
-		System.out.println("xpath ::: " + xpath);
+		//System.out.println("xpath ::: " + xpath);
 
 		List<WebElement> transEle = page.findElements(By.xpath(xpath));
 
@@ -73,17 +73,17 @@ public class SBIINBankPDFScrapper extends PDFParser {
 		Pattern pTrans = Pattern.compile(transRegEx);
 		Pattern pTrans1 = Pattern.compile(transRegex1);
 		Matcher m = null;
-		System.out.println("List size   ::: " + transEle.size());
+		//System.out.println("List size   ::: " + transEle.size());
 		double lastBal = Double.parseDouble(openBal);
 		BankTransaction lastTrans = null;
 		for(WebElement rowEle: transEle){
 
 			String rowText = rowEle.getText().trim();
-			System.out.println("rowtext ::: " + rowText); 
+			//System.out.println("rowtext ::: " + rowText); 
 			m = pTrans.matcher(rowText);
 
 			if(m.matches()){
-				System.out.println(11);
+				//System.out.println(11);
 				String transDate = m.group(1);
 				String desc = m.group(5);
 				String amount = m.group(6);
@@ -114,24 +114,24 @@ public class SBIINBankPDFScrapper extends PDFParser {
 				bt.setRunningBalance(runningBal);
 				account.addTransaction(bt);
 				lastTrans = bt;
-				System.out.println();
-				System.out.println();
-				System.out.println("Transaction Desc    ::: " + bt.getDescription());
-				System.out.println("Transaction amount  ::: " + bt.getAmount());
-				System.out.println("Transaction date    ::: " + bt.getTransDate());
-				System.out.println("Transaction type    ::: " + bt.getTransactionType());
-				System.out.println("Account Number      ::: " + bt.getAccountNumber());
-				System.out.println();
-				System.out.println();
+				//System.out.println();
+				//System.out.println();
+				//System.out.println("Transaction Desc    ::: " + bt.getDescription());
+				//System.out.println("Transaction amount  ::: " + bt.getAmount());
+				//System.out.println("Transaction date    ::: " + bt.getTransDate());
+				//System.out.println("Transaction type    ::: " + bt.getTransactionType());
+				//System.out.println("Account Number      ::: " + bt.getAccountNumber());
+				//System.out.println();
+				//System.out.println();
 
 			}
 			else{
-				System.out.println(22);
+				//System.out.println(22);
 				
 				if(lastTrans != null){
 					String temp = lastTrans.getTransDate();
 					if(temp.length() < 10){
-						System.out.println("handling date");
+						//System.out.println("handling date");
 						m = pTrans1.matcher(rowText);
 						if(m.matches()){
 							temp =  temp + " " + m.group(1);
@@ -149,7 +149,7 @@ public class SBIINBankPDFScrapper extends PDFParser {
 					}
 				}
 				else if(rowText.contains("This is a computer generated statement")){
-					System.out.println("End of transaction for the account " + accountNumber);
+					//System.out.println("End of transaction for the account " + accountNumber);
 					break;
 				}
 				else{

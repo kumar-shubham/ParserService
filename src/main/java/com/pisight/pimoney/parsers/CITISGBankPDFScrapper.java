@@ -1,11 +1,11 @@
 package com.pisight.pimoney.parsers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -18,14 +18,13 @@ import com.pisight.pimoney.beans.Response;
 public class CITISGBankPDFScrapper extends PDFParser {
 
 	@Override
-	public Response parse(WebDriver driver, File file) throws Exception {
+	public Response parse(WebDriver driver, PDDocument pdDocument) throws Exception {
 		// TODO Auto-generated method stub
-		
-		String page = parsePDFToHTML(file);
+		String page = parsePDFToHTML(pdDocument);
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
-		System.out.println(page);
+		//System.out.println(page);
 
 		js.executeScript(page);
 
@@ -36,8 +35,8 @@ public class CITISGBankPDFScrapper extends PDFParser {
 		
 		Response response = new Response();
 		
-		System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
-		System.out.println();
+		//System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
+		//System.out.println();
 		WebElement page = driver.findElement(By.id("PDF_TO_HTML"));
 		
 		WebElement detailEle = page.findElement(By.xpath("//td[contains(text(), 'Page 2 of')]/../following-sibling::tr[1]"));
@@ -48,8 +47,8 @@ public class CITISGBankPDFScrapper extends PDFParser {
 		
 		String statementDate = detailText.substring(detailText.length()-11);
 		
-		System.out.println("Account Holder       ::: " + accountHolder);
-		System.out.println("Statement Date       ::: " + statementDate);
+		//System.out.println("Account Holder       ::: " + accountHolder);
+		//System.out.println("Statement Date       ::: " + statementDate);
 		
 		List<WebElement> accountEle  = page.findElements(By.xpath("//td[contains(text(), 'SUMMARY OF YOUR CITI PRIORITY ACCOUNT')]/../following-sibling::tr"));
 		
@@ -79,15 +78,15 @@ public class CITISGBankPDFScrapper extends PDFParser {
 			}
 			
 			if(accountInProgress != null && rowText.contains(accountInProgress + " Total")){
-				System.out.println();
-				System.out.println(" end of " + accountInProgress + " accounts");
-				System.out.println();
+				//System.out.println();
+				//System.out.println(" end of " + accountInProgress + " accounts");
+				//System.out.println();
 				accountInProgress = null;
 				continue;
 			}
 			
 			if(typeCount == 2 && accountInProgress == null){
-				System.out.println("Account scrapping done. exiting the loop.");
+				//System.out.println("Account scrapping done. exiting the loop.");
 				break;
 			}
 			
@@ -100,7 +99,7 @@ public class CITISGBankPDFScrapper extends PDFParser {
 				Matcher m = r.matcher(balance);
 				
 				if(!m.matches()){
-					System.out.println("not the required line. So skipping.");
+					//System.out.println("not the required line. So skipping.");
 					continue;
 				}
 				
@@ -113,16 +112,16 @@ public class CITISGBankPDFScrapper extends PDFParser {
 				String accountName = rowText;	
 				
 				if(accountName.equalsIgnoreCase("Brokerage")){
-					System.out.println("investment account. So skipping.");
+					//System.out.println("investment account. So skipping.");
 					continue;
 				}
 				
-				System.out.println();
-				System.out.println("Account Balance      ::: " + balance);
-				System.out.println("Account Currency     ::: " + currency);
-				System.out.println("Account Number       ::: " + accountNumber);
-				System.out.println("Account Name       ::: " + accountName);
-				System.out.println();
+				//System.out.println();
+				//System.out.println("Account Balance      ::: " + balance);
+				//System.out.println("Account Currency     ::: " + currency);
+				//System.out.println("Account Number       ::: " + accountNumber);
+				//System.out.println("Account Name       ::: " + accountName);
+				//System.out.println();
 				
 			
 				BankAccount ba = new BankAccount();
@@ -164,8 +163,8 @@ public class CITISGBankPDFScrapper extends PDFParser {
 	    	boolean isTransStarted = false;
 	    	String acc = account.getAccountName() + " " + account.getAccountNumber() +  " " + account.getCurrency();
 	    	transactionEle = page.findElements(By.xpath("//td[text() = '" + acc + "']/../following-sibling::tr"));
-	    	System.out.println();
-	    	System.out.println();
+	    	//System.out.println();
+	    	//System.out.println();
 	    	String transDate = null;
 	    	String amount = null;
 	    	String desc = null;
@@ -175,7 +174,7 @@ public class CITISGBankPDFScrapper extends PDFParser {
 	    	for(WebElement rowEle: transactionEle){
 	    		
 	    		String rowText = rowEle.getText().trim();
-//	    		System.out.println(rowText);
+//	    		//System.out.println(rowText);
 	    		
 	    		m = rTrans.matcher(rowText);
 	    		
@@ -185,27 +184,27 @@ public class CITISGBankPDFScrapper extends PDFParser {
 	    			temp = temp.replace(",", "").trim();
 	    			
 	    			lastBal = Double.parseDouble(temp);
-	    			System.out.println();
-	    			System.out.println(" start of transactions for the account ::: " + account);
-	    			System.out.println();
+	    			//System.out.println();
+	    			//System.out.println(" start of transactions for the account ::: " + account);
+	    			//System.out.println();
 	    			continue;
 	    			
 	    		}
 	    		
 	    		if(m.matches()){
 	    			
-//	    			System.out.println("1");
+//	    			//System.out.println("1");
 	    			if(isTransStarted){
 	    				
-	    				System.out.println();
-	    				System.out.println();
-	    				System.out.println("Transaction Desc    ::: " + lastTrans.getDescription());
-	    				System.out.println("Transaction amount  ::: " + lastTrans.getAmount());
-	    				System.out.println("Transaction date    ::: " + lastTrans.getTransDate());
-	    				System.out.println("Transaction type    ::: " + lastTrans.getTransactionType());
-	    				System.out.println("Transaction balance ::: " + lastTrans.getRunningBalance());
-	    				System.out.println();
-	    				System.out.println();
+	    				//System.out.println();
+	    				//System.out.println();
+	    				//System.out.println("Transaction Desc    ::: " + lastTrans.getDescription());
+	    				//System.out.println("Transaction amount  ::: " + lastTrans.getAmount());
+	    				//System.out.println("Transaction date    ::: " + lastTrans.getTransDate());
+	    				//System.out.println("Transaction type    ::: " + lastTrans.getTransactionType());
+	    				//System.out.println("Transaction balance ::: " + lastTrans.getRunningBalance());
+	    				//System.out.println();
+	    				//System.out.println();
 	    			}
 	    			
 	    			runningBalance = rowText.substring(rowText.lastIndexOf(" ")).trim();
@@ -255,10 +254,10 @@ public class CITISGBankPDFScrapper extends PDFParser {
 	    			m = rEnd.matcher(rowText);
 		    		
 		    		if(m.matches()){
-		    			System.out.println();
-		    			System.out.println();
-		    			System.out.println(" end of transactions for the account ::: " + account);
-		    			System.out.println();
+		    			//System.out.println();
+		    			//System.out.println();
+		    			//System.out.println(" end of transactions for the account ::: " + account);
+		    			//System.out.println();
 		    			isTransStarted = false;
 		    			break;
 		    		}
@@ -266,8 +265,8 @@ public class CITISGBankPDFScrapper extends PDFParser {
 		    		if((rowText.contains("Page ") && rowText.contains(" of ")) || rowText.contains(accountHolder)
 		    				|| rowText.contains("Transactions Done") || rowText.contains("(continued)") 
 		    				|| rowText.contains("CLOSING BALANCE")){
-		    			System.out.println();
-		    			System.out.println("not a transaction. So skipping.");
+		    			//System.out.println();
+		    			//System.out.println("not a transaction. So skipping.");
 		    			continue;
 		    		}
 		    		if(isTransStarted){
@@ -280,23 +279,24 @@ public class CITISGBankPDFScrapper extends PDFParser {
 	    	}
 	    	
 	    	if(lastTrans != null){
-		    	System.out.println("Last transaction -->> ");
-				System.out.println();
-				System.out.println("Transaction Desc    ::: " + lastTrans.getDescription());
-				System.out.println("Transaction amount  ::: " + lastTrans.getAmount());
-				System.out.println("Transaction date    ::: " + lastTrans.getTransDate());
-				System.out.println("Transaction type    ::: " + lastTrans.getTransactionType());
-				System.out.println("Transaction balance ::: " + lastTrans.getRunningBalance());
-				System.out.println();
-				System.out.println();
+		    	//System.out.println("Last transaction -->> ");
+				//System.out.println();
+				//System.out.println("Transaction Desc    ::: " + lastTrans.getDescription());
+				//System.out.println("Transaction amount  ::: " + lastTrans.getAmount());
+				//System.out.println("Transaction date    ::: " + lastTrans.getTransDate());
+				//System.out.println("Transaction type    ::: " + lastTrans.getTransactionType());
+				//System.out.println("Transaction balance ::: " + lastTrans.getRunningBalance());
+				//System.out.println();
+				//System.out.println();
 	    	}
 	    	
-	    	System.out.println();
-	    	System.out.println();
+	    	//System.out.println();
+	    	//System.out.println();
 	    
 	    	
 	    }
 		return response;
 	}
 
+	
 }

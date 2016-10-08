@@ -1,32 +1,31 @@
 package com.pisight.pimoney.parsers;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 
-import com.pisight.pimoney.beans.Response;
 import com.pisight.pimoney.beans.CardAccount;
 import com.pisight.pimoney.beans.CardTransaction;
 import com.pisight.pimoney.beans.ParserUtility;
+import com.pisight.pimoney.beans.Response;
 
 public class CITISGCardPDFScrapper extends PDFParser {
 
 	@Override
-	public Response parse(WebDriver driver, File file) throws Exception {
+	public Response parse(WebDriver driver, PDDocument pdDocument) throws Exception {
 		// TODO Auto-generated method stub
-		String page = parsePDFToHTML(file);
-
+		String page = parsePDFToHTML(pdDocument);
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
-		System.out.println(page);
+		//System.out.println(page);
 
 		js.executeScript(page);
 
@@ -37,8 +36,8 @@ public class CITISGCardPDFScrapper extends PDFParser {
 		// TODO Auto-generated method stub
 		Response response = new Response();
 		
-		System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
-		System.out.println();
+		//System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
+		//System.out.println();
 		WebElement page = driver.findElement(By.id("PDF_TO_HTML"));
 		
 		HashMap<String, CardAccount> map = new HashMap<String, CardAccount>();
@@ -54,6 +53,7 @@ public class CITISGCardPDFScrapper extends PDFParser {
 			String creditLimit = creditLimitEle.getText().trim();
 			creditLimit = creditLimit.substring(creditLimit.indexOf("Credit Limit ")+12).trim();
 			creditLimit = creditLimit.replace("$", "").trim();
+			creditLimit = creditLimit.replace(",", "");
 			
 			WebElement dueDateEle = page.findElement(By.xpath("//td[contains(text(), 'Payment Due Date')]"));
 			
@@ -70,16 +70,16 @@ public class CITISGCardPDFScrapper extends PDFParser {
 			
 			boolean accountsFound = false;
 			for(WebElement rowEle: accountEle){
-				System.out.println("1");
+				//System.out.println("1");
 				String rowText = rowEle.getText().trim();
 				
 				Matcher m = pAccount.matcher(rowText);
 				
 				if(m.matches()){
-					System.out.println("2");
+					//System.out.println("2");
 					
 					if(!accountsFound){
-						System.out.println("3");
+						//System.out.println("3");
 						accountsFound = true;
 					}
 					
@@ -87,6 +87,15 @@ public class CITISGCardPDFScrapper extends PDFParser {
 					String accountNumber = m.group(2);
 					String amountDue = m.group(4);
 					String minPayment = m.group(7);
+					amountDue = amountDue.replace(",", "");
+					amountDue = amountDue.replace("$", "");
+					
+					double amtDue = Double.parseDouble(amountDue);
+					double crdtLimit = Double.parseDouble(creditLimit);
+					
+					String availableCredit = String.format("%.2f", (crdtLimit - amtDue));
+					
+					
 					
 					accountNumber = accountNumber.replace(" ", "");
 					
@@ -99,26 +108,28 @@ public class CITISGCardPDFScrapper extends PDFParser {
 					ca.setMinAmountDue(minPayment);
 					ca.setDueDate(dueDate);
 					ca.setTotalLimit(creditLimit);
+					ca.setAvailableCredit(availableCredit);
+					
 					response.addCardAccount(ca);
 					map.put(accountNumber, ca);
 					
-					System.out.println();
-					System.out.println("Account Number       ::: " + accountNumber);
-					System.out.println("Account Name         ::: " + accountName);
-					System.out.println("Amount Due      ::: " + amountDue);
-					System.out.println("Statement Date       ::: " + stmtDate);
-					System.out.println("Minimum Payment      ::: " + minPayment);
-					System.out.println("Credit Limit         ::: " + creditLimit);
-					System.out.println("Due Date             ::: " + dueDate);
-					System.out.println();
+					//System.out.println();
+					//System.out.println("Account Number       ::: " + accountNumber);
+					//System.out.println("Account Name         ::: " + accountName);
+					//System.out.println("Amount Due      ::: " + amountDue);
+					//System.out.println("Statement Date       ::: " + stmtDate);
+					//System.out.println("Minimum Payment      ::: " + minPayment);
+					//System.out.println("Credit Limit         ::: " + creditLimit);
+					//System.out.println("Due Date             ::: " + dueDate);
+					//System.out.println();
 				}
 				else{
-					System.out.println("4");
+					//System.out.println("4");
 					
 					if(accountsFound){
 						
 							if(rowText.contains("TOTAL FOR THE CARD(S)")){
-								System.out.println("All accounts scrapped. Now Skipping the loop.");
+								//System.out.println("All accounts scrapped. Now Skipping the loop.");
 								break;
 							}
 					}
@@ -126,8 +137,12 @@ public class CITISGCardPDFScrapper extends PDFParser {
 				
 			}
 		}
-		catch(NoSuchElementException e){
-			System.out.println("Error in card account scrapping.  Moving to search for transactions");
+		catch(WebDriverException e){
+			//System.out.println("WebDriver Error in card account scrapping.  Moving to search for transactions");
+			e.printStackTrace();
+		}
+		catch(Exception e){
+			//System.out.println("Error in card account scrapping.  Moving to search for transactions");
 			e.printStackTrace();
 		}
 		
@@ -142,7 +157,7 @@ public class CITISGCardPDFScrapper extends PDFParser {
 			
 			String text = ele.getText().trim();
 			if(lastText.equals(text)){
-				System.out.println("Transactions already scrapped. So skipping");
+				//System.out.println("Transactions already scrapped. So skipping");
 				continue;
 			}
 			lastText = text;
@@ -172,7 +187,7 @@ public class CITISGCardPDFScrapper extends PDFParser {
 				}
 			
 			
-			System.out.println("xpath ::: " + xpath);
+			//System.out.println("xpath ::: " + xpath);
 			 
 			List<WebElement> transEle = page.findElements(By.xpath(xpath));
 			
@@ -183,19 +198,19 @@ public class CITISGCardPDFScrapper extends PDFParser {
 			Pattern pTransEnd = Pattern.compile(transEndRegEx);
 			
 			boolean transFound = false;
-			System.out.println("List size   ::: " + transEle.size());
+			//System.out.println("List size   ::: " + transEle.size());
 			for(WebElement rowEle: transEle){
 				
 				String rowText = rowEle.getText().trim();
-				System.out.println("rowtext ::: " + rowText);
+				//System.out.println("rowtext ::: " + rowText);
 				m = pTrans.matcher(rowText);
 				
 				if(m.matches()){
 					if(!transFound){
-						System.out.println("Transaction starts for the account " + account.getAccountNumber());
+						//System.out.println("Transaction starts for the account " + account.getAccountNumber());
 						transFound = true;
 					}
-					System.out.println(11);
+					//System.out.println(11);
 					String transDate = m.group(1);
 					String desc = m.group(2);
 					String amount = m.group(3);
@@ -226,27 +241,27 @@ public class CITISGCardPDFScrapper extends PDFParser {
 					bt.setTransactionType(transType);
 					bt.setAccountNumber(account.getAccountNumber());
 					account.addTransaction(bt);
-					System.out.println();
-    				System.out.println();
-    				System.out.println("Transaction Desc    ::: " + bt.getDescription());
-    				System.out.println("Transaction amount  ::: " + bt.getAmount());
-    				System.out.println("Transaction date    ::: " + bt.getTransDate());
-    				System.out.println("Transaction type    ::: " + bt.getTransactionType());
-    				System.out.println("Account Number      ::: " + bt.getAccountNumber());
-    				System.out.println();
-    				System.out.println();
+					//System.out.println();
+    				//System.out.println();
+    				//System.out.println("Transaction Desc    ::: " + bt.getDescription());
+    				//System.out.println("Transaction amount  ::: " + bt.getAmount());
+    				//System.out.println("Transaction date    ::: " + bt.getTransDate());
+    				//System.out.println("Transaction type    ::: " + bt.getTransactionType());
+    				//System.out.println("Account Number      ::: " + bt.getAccountNumber());
+    				//System.out.println();
+    				//System.out.println();
 					
 				}
 				else{
-					System.out.println(22);
+					//System.out.println(22);
 						if(transFound){
-							System.out.println(33);
+							//System.out.println(33);
 						m = pTransEnd.matcher(rowText);
 						
 						if(m.matches()){
 							markerCount++;
 							if(markerCount > 1){
-								System.out.println("Transaction Ends for the account " + account.getAccountNumber());
+								//System.out.println("Transaction Ends for the account " + account.getAccountNumber());
 								break;
 							}
 						}

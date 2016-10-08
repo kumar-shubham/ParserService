@@ -1,31 +1,31 @@
 package com.pisight.pimoney.parsers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.pisight.pimoney.beans.Response;
-import com.pisight.pimoney.beans.ParserUtility;
 import com.pisight.pimoney.beans.BankAccount;
 import com.pisight.pimoney.beans.BankTransaction;
+import com.pisight.pimoney.beans.ParserUtility;
+import com.pisight.pimoney.beans.Response;
 
 public class UOBSGBankPDFScrapper extends PDFParser {
 
 	@Override
-	public Response parse(WebDriver driver, File file) throws Exception {
+	public Response parse(WebDriver driver, PDDocument pdDocument) throws Exception {
 		// TODO Auto-generated method stub
-		String page = parsePDFToHTML(file);
+		String page = parsePDFToHTML(pdDocument);
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
-		System.out.println(page);
+		//System.out.println(page);
 
 		js.executeScript(page);
 
@@ -35,8 +35,8 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 	private Response scrapeStatement(WebDriver driver) throws Exception {
 		// TODO Auto-generated method stub
 		Response response = new Response();
-		System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
-		System.out.println();
+		//System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
+		//System.out.println();
 		WebElement page = driver.findElement(By.id("PDF_TO_HTML"));
 		
 		WebElement holderEle = page.findElement(By.tagName("td"));
@@ -51,7 +51,7 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 		stmtDate = stmtDate.replace("Account Overview as at", "").trim();
 		
 		
-		System.out.println("Account Holder   ::: " + holderName);
+		//System.out.println("Account Holder   ::: " + holderName);
 		
 		List<BankAccount> accounts  = new ArrayList<BankAccount>();
 		
@@ -68,16 +68,16 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 		boolean accountsFound = false;
 		BankAccount temp = null;
 		for(WebElement rowEle: accountEle){
-			System.out.println("1");
+			//System.out.println("1");
 			String rowText = rowEle.getText().trim();
 			
 			Matcher m = pAccount.matcher(rowText);
 			
 			if(m.matches()){
-				System.out.println("2");
+				//System.out.println("2");
 				
 				if(!accountsFound){
-					System.out.println("3");
+					//System.out.println("3");
 					accountsFound = true;
 				}
 				
@@ -97,7 +97,7 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 				response.addBankAccount(ba);
 			}
 			else{
-				System.out.println("4");
+				//System.out.println("4");
 				
 				if(accountsFound){
 					
@@ -108,21 +108,21 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 						if(temp != null){
 							temp.setAccountNumber(accountNumber);
 							
-							System.out.println();
-							System.out.println("Account Balance      ::: " + temp.getAccountBalance());
-							System.out.println("Account Currency     ::: " + temp.getCurrency());
-							System.out.println("Account Number       ::: " + accountNumber);
-							System.out.println("Account Name         ::: " + temp.getAccountName());
-							System.out.println("Account Holder       ::: " + temp.getAccountHolder());
-							System.out.println();
+							//System.out.println();
+							//System.out.println("Account Balance      ::: " + temp.getAccountBalance());
+							//System.out.println("Account Currency     ::: " + temp.getCurrency());
+							//System.out.println("Account Number       ::: " + accountNumber);
+							//System.out.println("Account Name         ::: " + temp.getAccountName());
+							//System.out.println("Account Holder       ::: " + temp.getAccountHolder());
+							//System.out.println();
 						}
 					}
 					else{
-						System.out.println("5");
+						//System.out.println("5");
 						m = pAccountEnd.matcher(rowText);
 						
 						if(m.matches()){
-							System.out.println("All accounts scrapped. Now Skipping the loop.");
+							//System.out.println("All accounts scrapped. Now Skipping the loop.");
 							break;
 						}
 					}
@@ -135,7 +135,7 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 			
 			String identifier = account.getAccountName() + " " + account.getAccountNumber();
 			
-			System.out.println("identifier  ::: " + identifier);
+			//System.out.println("identifier  ::: " + identifier);
 			
 			List<WebElement> transEle = page.findElements(By.xpath("//td[contains(text(), '" + account.getAccountNumber() 
 												+ "') and contains(text(), '" + account.getAccountName() + "')]/../following-sibling::tr"));
@@ -152,7 +152,7 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 			
 			boolean transFound = false;
 			
-			System.out.println("List size   ::: " + transEle.size());
+			//System.out.println("List size   ::: " + transEle.size());
 			double lastBal = Integer.MIN_VALUE;
 			BankTransaction lastTrans = null;
 			for(WebElement rowEle: transEle){
@@ -211,7 +211,7 @@ public class UOBSGBankPDFScrapper extends PDFParser {
 						m = pTransEnd.matcher(rowText);
 						
 						if(m.matches()){
-							System.out.println("Transaction Ends for the account " + account.getAccountNumber());
+							//System.out.println("Transaction Ends for the account " + account.getAccountNumber());
 							break;
 						}
 						else{

@@ -8,8 +8,24 @@ public class DocumentRequest {
 	private String type = null;
 	private String docByte = null;
 	private String userId = null;
+	private boolean isEncrypted = false;
+	private char[] pswd = null;
 	
 	
+	
+	
+	public boolean isEncrypted() {
+		return isEncrypted;
+	}
+	public void setEncrypted(boolean isEncrypted) {
+		this.isEncrypted = isEncrypted;
+	}
+	public char[] getPswd() {
+		return pswd;
+	}
+	public void setPswd(String pswd) {
+		this.pswd = pswd.toCharArray();
+	}
 	public String getUserId() {
 		return userId;
 	}

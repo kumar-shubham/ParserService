@@ -1,11 +1,11 @@
 package com.pisight.pimoney.parsers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -19,13 +19,13 @@ import com.pisight.pimoney.beans.Response;
 public class OCBCSGCardPDFScrapper extends PDFParser {
 
 	@Override
-	public Response parse(WebDriver driver, File file) throws Exception {
+	public Response parse(WebDriver driver, PDDocument pdDocument) throws Exception {
 		// TODO Auto-generated method stub
-		String page = parsePDFToHTML(file);
+		String page = parsePDFToHTML(pdDocument);
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
-		System.out.println(page);
+		//System.out.println(page);
 
 		js.executeScript(page);
 
@@ -36,8 +36,8 @@ public class OCBCSGCardPDFScrapper extends PDFParser {
 		// TODO Auto-generated method stub
 		
 		Response response = new Response();
-		System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
-		System.out.println();
+		//System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
+		//System.out.println();
 		WebElement page = driver.findElement(By.id("PDF_TO_HTML"));
 		
 		WebElement holderEle = page.findElement(By.xpath("//td[contains(text(),'NAME : ')]"));
@@ -64,10 +64,10 @@ public class OCBCSGCardPDFScrapper extends PDFParser {
 		availableCredit = availableCredit.replace("$", "");
 		availableCredit = availableCredit.replaceAll(",", "");
 		
-		System.out.println("Statement Date          ::: " + statementDate);
-		System.out.println("Due Date                ::: " + dueDate);
-		System.out.println("Credit Limit            ::: " + creditLimit);
-		System.out.println("Availabe Credit         ::: " + availableCredit);
+		//System.out.println("Statement Date          ::: " + statementDate);
+		//System.out.println("Due Date                ::: " + dueDate);
+		//System.out.println("Credit Limit            ::: " + creditLimit);
+		//System.out.println("Availabe Credit         ::: " + availableCredit);
 		
 		List<WebElement> accountEle = page.findElements(By.xpath("//td[contains(text(), ' PAYMENT AMOUNT')]/../following-sibling::tr"));
 		
@@ -117,7 +117,7 @@ public class OCBCSGCardPDFScrapper extends PDFParser {
 					m = pAccountEnd.matcher(rowText);
 					
 					if(m.matches()){
-						System.out.println("All accounts scrapped. Now exiting the loop.");
+						//System.out.println("All accounts scrapped. Now exiting the loop.");
 						break;
 						
 					}
@@ -136,18 +136,18 @@ public class OCBCSGCardPDFScrapper extends PDFParser {
 		
 		for(CardAccount account:accounts){
 			
-			System.out.println("inside for");
+			//System.out.println("inside for");
 			List<WebElement> transEle = page.findElements(By.xpath("//td[contains(text(), ' " + account.getAccountNumber() + "')]/../following-sibling::tr"));
 			boolean transFound = false;
 			for(WebElement rowEle:transEle){
-				System.out.println("inside for for");
+				//System.out.println("inside for for");
 				String rowText = rowEle.getText().trim();
 				
 				Matcher m = pTrans.matcher(rowText);
 				
 				if(m.matches()){
 					
-					System.out.println("inside for for if");
+					//System.out.println("inside for for if");
 					if(!transFound){
 						transFound = true;
 					}
@@ -184,7 +184,7 @@ public class OCBCSGCardPDFScrapper extends PDFParser {
 						m = pTransEnd.matcher(rowText);
 						
 						if(m.matches()){
-							System.out.println("End of transactions for the account " + account.getAccountNumber());
+							//System.out.println("End of transactions for the account " + account.getAccountNumber());
 							break;
 						}
 					

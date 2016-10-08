@@ -1,31 +1,31 @@
 package com.pisight.pimoney.parsers;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-import com.pisight.pimoney.beans.Response;
 import com.pisight.pimoney.beans.CardAccount;
 import com.pisight.pimoney.beans.CardTransaction;
 import com.pisight.pimoney.beans.ParserUtility;
+import com.pisight.pimoney.beans.Response;
 
 public class DBSSGCardPDFScrapper extends PDFParser {
 
 	@Override
-	public Response parse(WebDriver driver, File file) throws Exception {
+	public Response parse(WebDriver driver, PDDocument pdDocument) throws Exception {
 		// TODO Auto-generated method stub
-		String page = parsePDFToHTML(file);
+		String page = parsePDFToHTML(pdDocument);
 
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
-		System.out.println(page);
+		//System.out.println(page);
 
 		js.executeScript(page);
 
@@ -36,8 +36,8 @@ public class DBSSGCardPDFScrapper extends PDFParser {
 		// TODO Auto-generated method stub
 		
 		Response response = new Response();
-		System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
-		System.out.println();
+		//System.out.println("#@#@#@#@##@#@##@#@#@##@#@#@#@#@##@#@#@#@#@#@##@#@#@#@#");
+		//System.out.println();
 		WebElement page = driver.findElement(By.id("PDF_TO_HTML"));
 		
 		WebElement holderEle = page.findElement(By.xpath("//td[text() = 'DBS Bank Ltd']/../following-sibling::tr[4]"));
@@ -94,17 +94,17 @@ public class DBSSGCardPDFScrapper extends PDFParser {
 				String availableCredit = String.format("%.2f", (Double.parseDouble(creditLimit) - Double.parseDouble(amountDue)));
 				
 				
-				System.out.println();
-				System.out.println("Account Number   ::: " + accountNumber);
-				System.out.println("Account Name     ::: " + accountName);
-				System.out.println("Account Holder   ::: " + accountHolder);
-				System.out.println("Minimum Payment  ::: " + minPayment);
-				System.out.println("Amount Due       ::: " + amountDue);
-				System.out.println("Credit Limit     ::: " + creditLimit);
-				System.out.println("Available Credit ::: " + availableCredit);
-				System.out.println("Bill Date        ::: " + statementDate);
-				System.out.println("Due Date         ::: " + dueDate);
-				System.out.println();
+				//System.out.println();
+				//System.out.println("Account Number   ::: " + accountNumber);
+				//System.out.println("Account Name     ::: " + accountName);
+				//System.out.println("Account Holder   ::: " + accountHolder);
+				//System.out.println("Minimum Payment  ::: " + minPayment);
+				//System.out.println("Amount Due       ::: " + amountDue);
+				//System.out.println("Credit Limit     ::: " + creditLimit);
+				//System.out.println("Available Credit ::: " + availableCredit);
+				//System.out.println("Bill Date        ::: " + statementDate);
+				//System.out.println("Due Date         ::: " + dueDate);
+				//System.out.println();
 				CardAccount ca = new CardAccount();
 				ca.setAccountName(accountName);
 				ca.setAccountNumber(accountNumber);
@@ -125,7 +125,7 @@ public class DBSSGCardPDFScrapper extends PDFParser {
 				if(accountFound){
 					m = rEnd.matcher(rowText);
 					if(m.matches()){
-						System.out.println("No more accounts to scrape so exiting the loop");
+						//System.out.println("No more accounts to scrape so exiting the loop");
 						break;
 					}
 				}
@@ -180,13 +180,13 @@ public class DBSSGCardPDFScrapper extends PDFParser {
 					transDate = rowText.substring(0, 6).trim();
 					desc = rowText.substring(6).trim();
 					
-					System.out.println();
-					System.out.println();
-					System.out.println("Transaction Date   ::: " + transDate);
-					System.out.println("Transaction Amount ::: " + amount);
-					System.out.println("Transaction Type   ::: " + transType);
-					System.out.println("Transaction Desc   ::: " + desc);
-					System.out.println();
+					//System.out.println();
+					//System.out.println();
+					//System.out.println("Transaction Date   ::: " + transDate);
+					//System.out.println("Transaction Amount ::: " + amount);
+					//System.out.println("Transaction Type   ::: " + transType);
+					//System.out.println("Transaction Desc   ::: " + desc);
+					//System.out.println();
 					
 					CardTransaction ct = new CardTransaction();
 					
@@ -207,7 +207,7 @@ public class DBSSGCardPDFScrapper extends PDFParser {
 						m = pTransEnd.matcher(rowText);
 						
 						if(m.matches()){
-							System.out.println("End of transaction for the account " + account.getAccountName());
+							//System.out.println("End of transaction for the account " + account.getAccountName());
 							break;
 						}
 					

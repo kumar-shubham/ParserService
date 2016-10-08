@@ -16,10 +16,19 @@ public class ParserFactory {
 		instituteClassMap.put("Citibank (SG) -Manual", "CITI");
 		instituteClassMap.put("DBS (SG) -Manual", "DBS");
 		instituteClassMap.put("ANZ (SG) -Manual", "ANZ");
-		instituteClassMap.put("SCB (SG) -Manual", "SCB");
+		instituteClassMap.put("Standard Chartered Bank (SG) -Manual", "SCB");
 		instituteClassMap.put("OCBC (SG) -Manual", "OCBC");
 		instituteClassMap.put("ICICI (SG) -Manual", "ICICI");
 		instituteClassMap.put("UOB (SG) -Manual", "UOB");
+		instituteClassMap.put("State Bank of India (IN) -Manual", "SBI");
+		instituteClassMap.put("AXIS (IN) -Manual", "AXIS");
+		instituteClassMap.put("HDFC (IN) -Manual", "HDFC");
+		instituteClassMap.put("SVC (IN) -Manual", "SVC");
+		instituteClassMap.put("IDBI (IN) -Manual", "IDBI");
+		instituteClassMap.put("ICICI (IN) -Manual", "ICICI");
+		instituteClassMap.put("CIMB (SG) -Manual", "CIMB");
+		instituteClassMap.put("Citibank (IN) -Manual", "CITI");
+		
 	}
 	
 	public static ParserFactory getFactory(){

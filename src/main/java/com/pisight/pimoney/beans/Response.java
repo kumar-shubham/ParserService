@@ -8,9 +8,30 @@ public class Response {
 	private List<BankAccount> bankAccounts = new ArrayList<BankAccount>();
 	
 	private List<CardAccount> cardAccounts = new ArrayList<CardAccount>();
+	
+	private boolean isEncrypted = false;
+	
+	private boolean isPswdCorrect = false;
 
 	
 	
+	
+	public boolean isEncrypted() {
+		return isEncrypted;
+	}
+
+	public void setEncrypted(boolean isEncrypted) {
+		this.isEncrypted = isEncrypted;
+	}
+
+	public boolean isPswdCorrect() {
+		return isPswdCorrect;
+	}
+
+	public void setPswdCorrect(boolean isPswdCorrect) {
+		this.isPswdCorrect = isPswdCorrect;
+	}
+
 	public List<BankAccount> getBankAccounts() {
 		return bankAccounts;
 	}
